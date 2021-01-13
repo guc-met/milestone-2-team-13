@@ -11,6 +11,7 @@ const Staff = require("../mongoose/dao/staff.js");
 const Request = require("../mongoose/dao/request.js");
 const faculty = require("../mongoose/dao/faculty");
 const Location = require("../mongoose/dao/location");
+const department = require("../mongoose/dao/department");
 
 //=====================:-ROUTES-:======================
 
@@ -40,15 +41,35 @@ router.post("/logout", async function (req, res) {
  */
 router.get("/myprofile", async function (req, res) {
   //get the user
-  const user = await Staff.findOne({ staffID: req.user.staffID });
+  var user = await Staff.findOne({ staffID: req.user.staffID });
 
   //user does not exist
   if (!user) {
     return res.status(HTTP_CODES.NOT_FOUND).json({ msg: "user not found" });
   }
 
-  //remove sensitive info
-  user.set("password", null); // password is null
+  user = user.toJSON();
+
+  
+  const userFaculty = await faculty.findById(user.facultyID);
+  const userDpartment = await department.findById(user.departmentID);
+  const userOfficeLocation = await Location.findById(user.officeLocationID);
+  var facultyName = userFaculty?userFaculty.name:null;
+  var departmentName = userDpartment?userDpartment.name:null;
+  var officeLocation = userOfficeLocation?userOfficeLocation.name:null;
+
+
+  user.facultyName = facultyName;
+  user.departmentName = departmentName;
+  user.officeLocation = officeLocation;
+
+  //remove sensitive and unneeded info
+  delete user.password;
+  delete user.facultyID;
+  delete user.departmentID;
+  delete user.officeLocationID;
+  delete user.attendance;
+  delete user._id
 
   //otherwise return the user
   return res.status(HTTP_CODES.OK).send(user);
