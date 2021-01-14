@@ -103,7 +103,7 @@ router.post("/login", async (req, res) => {
     //create a token
     let token = jwt.sign(payload, key, {
       noTimestamp: true,
-      expiresIn: 900, //14 days
+      expiresIn: "900h", //14 days
     });
     //give the token to the user by adding it to the header of the response
     res.header({ "auth-token": token });
@@ -115,25 +115,23 @@ router.post("/login", async (req, res) => {
   }
 });
 
-
 router.post("/refresh-token", async (req, res) => {
   const oldToken = req.body.jwt;
 
-  if(!oldToken)
-    return res.status(401).json({ msg: "no token was provided" });
+  if (!oldToken) return res.status(401).json({ msg: "no token was provided" });
 
   var decoded = jwt_decode(oldToken);
 
   decoded = {
     staffID: decoded.staffID,
     role: decoded.role,
-    objectID: decoded.objectID
-  }
+    objectID: decoded.objectID,
+  };
 
   //new token
   let token = jwt.sign(decoded, key, {
     noTimestamp: true,
-    expiresIn: 900, //14 days
+    expiresIn: "900h", //14 days
   });
 
   res.header({ "auth-token": token });

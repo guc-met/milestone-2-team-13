@@ -628,4 +628,35 @@ router.post(
     }
   }
 );
+router.get(
+  "/getCourses",
+  authenticateAndAuthorise("HOD"),
+  async function (req, res) {
+    try {
+      // get uID
+      // let { staffID } = req.query;
+      let { staffID: uID, objectID } = req.user;
+      let doc = await department.findOne({ hodID: objectID }).populate({
+        path: "coursesIDs",
+        //    populate: {
+        //     path: "instructorIDs taList coordinatorID",}
+      });
+      let result = [];
+      if (!doc) throw error("not found ");
+      doc.coursesIDs.forEach((element) => {
+        result.push(element.courseCode);
+      });
+      res.status(200).json({
+        result,
+      });
+
+      // make sure staff id is valid
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({
+        msg: error.message,
+      });
+    }
+  }
+);
 module.exports = router;

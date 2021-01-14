@@ -71,6 +71,7 @@ const schema = new mongoose.Schema({
     },
     min: 0,
     max: 6,
+    default: 0,
   },
   officeLocationID: { type: Schema.Types.ObjectId, ref: "Location" },
   salary: {
@@ -102,9 +103,9 @@ const schema = new mongoose.Schema({
   salaryDeduction: {
     type: Number,
     default: 0,
-    min: 0
+    min: 0,
   },
-  tokens: { type: [String], default: [] }
+  tokens: { type: [String], default: [] },
 });
 
 /* schema.methods.generateAuthToken = async function () {
