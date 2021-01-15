@@ -109,24 +109,26 @@ router.post("/login", async (req, res) => {
     res.header({ "auth-token": token });
 
     //TODO: what to send to the user?
-    return res.json({ msg: "Login Successful" });
+    return res.json({ msg: "Login Successful", token: token });
   } catch (error) {
     res.status(400).json({ msg: error.message });
   }
 });
 
+
 router.post("/refresh-token", async (req, res) => {
   const oldToken = req.body.jwt;
 
-  if (!oldToken) return res.status(401).json({ msg: "no token was provided" });
+  if(!oldToken)
+    return res.status(401).json({ msg: "no token was provided" });
 
   var decoded = jwt_decode(oldToken);
 
   decoded = {
     staffID: decoded.staffID,
     role: decoded.role,
-    objectID: decoded.objectID,
-  };
+    objectID: decoded.objectID
+  }
 
   //new token
   let token = jwt.sign(decoded, key, {

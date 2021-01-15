@@ -1,7 +1,6 @@
 var express = require("express");
 var app = express();
-var cors = require("cors");
-app.use(cors());
+var cors = require('cors');
 
 const bodyParser = require("body-parser");
 
@@ -34,7 +33,6 @@ var academicRouter = require("./src/routes/academic");
 const auth = require("./src/routes/auth");
 
 // view engine setup
-
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "jade");
 
@@ -44,6 +42,12 @@ app.use(bodyParser.json());
 
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
+
+const corsOptions = {
+  exposedHeaders: 'auth-token'
+};
+
+app.use(cors(corsOptions));
 
 //routes
 app.use("/general", generalRouter);
@@ -62,6 +66,7 @@ cronJobs.nxtAtt.start();
 cronJobs.lb.start();
 cronJobs.deduction.start();
 
+
 //DB + server connection
 require("./src/mongoose/util/connect&Initialize")(() => {
   app.listen(properties.PORT, (err) => {
@@ -69,9 +74,7 @@ require("./src/mongoose/util/connect&Initialize")(() => {
       console.log(
         red("app failed to start " + "(PORT: " + properties.PORT + ")")
       );
-    console.log(
-      green("CORS-enabled web server is listening to port " + properties.PORT)
-    );
+    console.log(green("CORS-enabled web server is listening to port " + properties.PORT));
   });
 });
 
